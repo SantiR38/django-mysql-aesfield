@@ -35,7 +35,8 @@ class AESField(models.CharField):
         raise EncryptedField('You cannot do lookups on an encrypted field.')
 
     def get_db_prep_value(self, value, connection, prepared=False):
-        if not prepared and value:
+        if not prepared and value and \
+            connection.settings_dict['ENGINE'] == 'django.db.backends.mysql':
             cursor = connection.cursor()
             cursor.execute('SELECT CONCAT(%s, HEX(AES_ENCRYPT(%s, %s)))',
                            (self.aes_prefix, value, self.get_aes_key()))
@@ -43,7 +44,8 @@ class AESField(models.CharField):
         return value
 
     def to_python(self, value):
-        if not value or not value.startswith(self.aes_prefix):
+        if not value or not value.startswith(self.aes_prefix) or \
+            connection.settings_dict['ENGINE'] == 'django.db.backends.mysql':
             return value
         cursor = connection.cursor()
         cursor.execute('SELECT AES_DECRYPT(UNHEX(SUBSTRING(%s, %s)), %s)',
