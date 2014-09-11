@@ -45,7 +45,7 @@ class AESField(models.CharField):
 
     def to_python(self, value):
         if not value or not value.startswith(self.aes_prefix) or \
-            connection.settings_dict['ENGINE'] == 'django.db.backends.mysql':
+            connection.settings_dict['ENGINE'] != 'django.db.backends.mysql':
             return value
         cursor = connection.cursor()
         cursor.execute('SELECT AES_DECRYPT(UNHEX(SUBSTRING(%s, %s)), %s)',
