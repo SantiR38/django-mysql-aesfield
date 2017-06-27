@@ -11,7 +11,6 @@ class EncryptedField(Exception):
 class AESField(models.CharField):
 
     description = 'A field that uses MySQL AES encryption.'
-    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         # TODO: raise an error if the field length is too small.
@@ -42,6 +41,9 @@ class AESField(models.CharField):
                            (self.aes_prefix, value, self.get_aes_key()))
             value = cursor.fetchone()[0]
         return value
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
     def to_python(self, value):
         if not value or not value.startswith(self.aes_prefix) or \
