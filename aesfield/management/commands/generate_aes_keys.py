@@ -29,13 +29,13 @@ class Command(BaseCommand):
         for dest in settings.AES_KEYS.values():
             if os.path.exists(dest):
                 failures = True
-                print 'Not overwriting file: %s' % dest
+                print('Not overwriting file: {}'.format(dest))
                 continue
 
             with open(dest, 'wb') as fp:
                 fp.write(generate_key(options['length']))
-            os.chmod(dest, 0600)
-            print 'Wrote new key: %s' % dest
+            os.chmod(dest, 0o600)
+            print('Wrote new key: {}'.format(dest))
 
         if failures:
             raise CommandError('At least one key file already exists, '

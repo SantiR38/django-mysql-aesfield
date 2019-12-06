@@ -54,5 +54,5 @@ class AESField(models.CharField):
                        (value, len(self.aes_prefix) + 1, self.get_aes_key()))
         res = cursor.fetchone()[0]
         if res:
-            value = res
+            value = res.decode('utf-8')
         return value
